@@ -1,0 +1,18 @@
+const express = require("express");
+const router = express.Router();
+
+const {
+  createClinic,
+  getAllClinics,
+  getClinicById,
+  updateClinic,
+  deleteClinic,
+} = require("../controllers/ClinicsController");
+
+router.post("/", createClinic);
+router.get("/", getAllClinics);
+router.get("/:id", getClinicById);
+router.put("/:id", updateClinic);
+router.delete("/:id", deleteClinic);
+
+module.exports = router;

@@ -5,7 +5,12 @@ const connectDB = require("./config/db");
 
 const doctorRoutes = require("./routes/doctorRoutes");
 const metaRoutes = require("./routes/metaRoutes");
-
+const clinicsRoutes = require("./routes/clinicsRoutes");
+const hospitalsRoutes = require("./routes/hospitalsRoutes");
+const labTestsRoutes = require("./routes/labTestsRoutes");
+const medicinesRoutes = require("./routes/medicinesRoutes");
+const servicesRoutes = require("./routes/servicesRoutes");
+const onlineConsultationsRoutes = require("./routes/onlineConsultationsRoutes");
 const app = express();
 
 // Connect DB
@@ -18,6 +23,12 @@ app.use("/uploads", express.static("uploads"));
 
 // Routes
 app.use("/api/doctors", doctorRoutes);
+app.use("/api/clinics", clinicsRoutes);
+app.use("/api/hospitals", hospitalsRoutes);
+app.use("/api/labtests", labTestsRoutes);
+app.use("/api/medicines", medicinesRoutes);
+app.use("/api/services", servicesRoutes);
+app.use("/api/onlineconsultations", onlineConsultationsRoutes);
 app.use("/api/meta", metaRoutes);
 
 // Test route
