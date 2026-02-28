@@ -28,19 +28,66 @@ exports.createDoctor = async (req, res) => {
   }
 };
 
-// Get All
+// Get All - WITH PAGINATION
 exports.getAllDoctors = async (req, res) => {
   try {
-    const doctors = await OnlineConsultation.find().sort({ createdAt: -1 });
+    // ── Pagination parameters ────────────────────────────────────────
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
 
+    // Optional filters (you can add more later)
+    const speciality = req.query.speciality;
+    const search = req.query.search;
+
+    // Build query
+    const query = {};
+
+    if (speciality) {
+      query.speciality = speciality;
+    }
+
+    if (search) {
+      query.$or = [
+        { name: { $regex: search, $options: "i" } },
+        { speciality: { $regex: search, $options: "i" } },
+      ];
+    }
+
+    // Get total count (very important for frontend)
+    const total = await OnlineConsultation.countDocuments(query);
+
+    // Get paginated results
+    const doctors = await OnlineConsultation.find(query)
+      .skip(skip)
+      .limit(limit)
+      .sort({ createdAt: -1 }) // newest first (change if needed)
+      .lean(); // better performance
+
+    // Calculate pagination info
+    const totalPages = Math.ceil(total / limit);
+    const hasNextPage = page < totalPages;
+    const hasPrevPage = page > 1;
+
+    // Response
     res.status(200).json({
       success: true,
-      count: doctors.length,
+      count: doctors.length, // how many returned this page
+      total, // total matching records
+      pagination: {
+        currentPage: page,
+        totalPages,
+        totalItems: total,
+        perPage: limit,
+        hasNextPage,
+        hasPrevPage,
+        nextPage: hasNextPage ? page + 1 : null,
+        prevPage: hasPrevPage ? page - 1 : null,
+      },
       data: doctors,
     });
   } catch (error) {
     console.error("❌ Get Online Doctors Error:", error);
-
     res.status(500).json({
       success: false,
       message: error.message,
@@ -66,7 +113,6 @@ exports.getDoctorById = async (req, res) => {
     });
   } catch (error) {
     console.error("❌ Get Doctor Error:", error);
-
     res.status(500).json({
       success: false,
       message: error.message,
@@ -96,7 +142,6 @@ exports.updateDoctor = async (req, res) => {
     });
   } catch (error) {
     console.error("❌ Update Doctor Error:", error);
-
     res.status(500).json({
       success: false,
       message: error.message,
@@ -122,7 +167,6 @@ exports.deleteDoctor = async (req, res) => {
     });
   } catch (error) {
     console.error("❌ Delete Doctor Error:", error);
-
     res.status(500).json({
       success: false,
       message: error.message,
