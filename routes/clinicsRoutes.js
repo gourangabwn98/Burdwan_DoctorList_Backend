@@ -7,7 +7,7 @@ const {
   getClinicById,
   updateClinic,
   deleteClinic,
-} = require("../controllers/ClinicsController");
+} = require("../controllers/clinicsController");
 
 router.post("/", createClinic);
 router.get("/", getAllClinics);
