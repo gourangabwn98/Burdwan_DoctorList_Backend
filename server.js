@@ -17,9 +17,17 @@ const app = express();
 connectDB();
 
 // Middleware
-app.use(cors());
+// app.use(cors());
 app.use(express.json());
 app.use("/uploads", express.static("uploads"));
+
+app.use(
+  cors({
+    origin: "*", // or your frontend URL
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
+  }),
+);
 
 // Routes
 app.use("/api/doctors", doctorRoutes);
